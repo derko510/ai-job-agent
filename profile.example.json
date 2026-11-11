@@ -1,0 +1,64 @@
+{
+ "_about": "Example only. Setup copies this to profile.json and fills it from the interview. Every value here is fake.",
+ "name": "Alex Example",
+ "legal_name": "Alex Q. Example",
+ "preferred_name": "Alex",
+ "email": "alex.example@gmail.com",
+ "phone": "555-555-0100",
+ "address": {"street": "123 Example St", "city": "Oakland", "state": "CA", "zip": "94600", "country": "United States"},
+ "links": {"linkedin": "https://www.linkedin.com/in/alex-example/", "github": "https://github.com/alexexample", "portfolio": ""},
+ "work_authorization": {"authorized_us": true, "needs_sponsorship_now": false, "needs_sponsorship_future": false, "citizenship": "US citizen", "clearance": ""},
+ "location": {
+  "home_area_label": "San Francisco Bay Area",
+  "home_area_places": ["san francisco", "sf", "bay area", "south san francisco", "oakland", "berkeley", "emeryville", "alameda", "san leandro", "hayward", "fremont", "newark, ca", "union city", "pleasanton", "dublin, ca", "livermore", "walnut creek", "san ramon", "san mateo", "foster city", "burlingame", "san bruno", "belmont", "san carlos", "redwood city", "menlo park", "palo alto", "mountain view", "los altos", "sunnyvale", "santa clara", "cupertino", "san jose", "milpitas", "campbell", "los gatos", "brisbane"],
+  "remote_us_ok": true,
+  "relocate_min_salary": 160000,
+  "onsite_ok": true
+ },
+ "targets": {
+  "_help": "Leave a list empty to use the built-in new-grad software defaults in crawl_boards.py.",
+  "title_include": [],
+  "level_include": [],
+  "title_exclude": [],
+  "max_years_required": 5,
+  "also_systems_roles": false
+ },
+ "compensation": {"desired_base": 130000, "minimum_base": 90000, "current_base": null, "intern_hourly": "$45/hour", "salary_history_policy": "decline if optional (illegal to ask in CA)"},
+ "availability": {"preferred_start": "June 2027", "earliest_start": "about 2 weeks after an offer", "notice_period": "2 weeks"},
+ "education": [
+  {"school": "Example State University", "degree": "B.S.", "field": "Computer Science", "start": "Sep 2023", "end": "May 2027 (expected)", "gpa": "3.5", "notes": ""}
+ ],
+ "experience": [
+  {"org": "Example Corp", "title": "Software Engineer Intern", "location": "Remote", "start": "Jun 2025", "end": "Aug 2025",
+   "bullets": ["Built an internal dashboard in React and Node.js used by 40 support agents", "Cut a nightly ETL job from 2 hours to 20 minutes by batching database writes"]}
+ ],
+ "projects": [
+  {"name": "Example Project", "tech": "Python, FastAPI, PostgreSQL", "dates": "Jan 2026 - Present", "bullets": ["Built a REST API for ...", "Deployed on ..."]}
+ ],
+ "skills": {"Languages": "Python, JavaScript, TypeScript, SQL", "Frameworks": "React, Node.js, FastAPI", "Cloud": "AWS, Docker, Git", "AI": "OpenAI API, RAG"},
+ "years_of_experience": {"total": {"Python": 3, "JavaScript": 2, "SQL": 2}, "professional": {"Python": 0.25}, "professional_overall": 0.25},
+ "eeo": {"gender": "Decline to self-identify", "race": "Decline to self-identify", "veteran": "I am not a protected veteran", "disability": "Decline to self-identify", "pronouns_if_required": "I prefer not to say"},
+ "answer_bank": [
+  {"q": "Willing to travel", "a": "Yes, up to 25%"},
+  {"q": "NDA or non-compete limiting work", "a": "No"},
+  {"q": "Ever terminated or asked to resign", "a": "No"},
+  {"q": "Background check / drug test", "a": "Yes, willing"},
+  {"q": "Driver's license", "a": "Yes"},
+  {"q": "Languages", "a": "English (native)"},
+  {"q": "SAT / ACT / GRE", "a": "Did not take (leave optional score fields blank)"},
+  {"q": "References", "a": "Skip: leave optional reference fields blank; if references are required, skip the job"},
+  {"q": "Relatives employed at the company", "a": "No"}
+ ],
+ "writing_material": [
+  "Example Project: why it was built, what was hard, measurable result",
+  "Example Corp internship: the dashboard and the ETL speed-up"
+ ],
+ "how_heard": "Company careers page / job board",
+ "contact_current_employer": "No (not before an offer)",
+ "exclude_companies": ["Current Employer Inc"],
+ "limits": {"max_per_company": 3, "greenhouse_per_day": 5, "skip_lever": true},
+ "notifications": {"telegram": false},
+ "dashboard_url": "",
+ "browser_device_id": "",
+ "browser_name": ""
+}

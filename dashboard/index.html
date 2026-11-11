@@ -1,0 +1,665 @@
+<style>
+.jh { --jh-applied: #4a78c2; --jh-screen: #b9822b; --jh-interview: #7a5cc4; --jh-offer: var(--color-ok); --jh-rejected: var(--color-bad); --jh-ready: var(--color-warn); --jh-skipped: var(--color-fg-muted);
+  --jh-line: var(--color-border-line); --jh-soft: color-mix(in srgb, var(--color-fg) 4%, transparent);
+  display: flex; flex-direction: column; gap: calc(var(--cds-gap-lg) * 1.5); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+.jh h1, .jh h2, .jh h3 { margin: 0; }
+.jh button { font-family: inherit; }
+.jh [hidden] { display: none !important; }
+.jh :focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; border-radius: 4px; }
+
+/* Header */
+.jh-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--cds-gap-md); flex-wrap: wrap; }
+.jh-top h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); letter-spacing: -0.01em; }
+.jh-top p { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.jh-stamp { text-align: right; line-height: 1.5; }
+.jh-stamp span { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+@media (max-width: 40rem) { .jh-stamp { text-align: left; } }
+
+/* Pipeline hero */
+.jh-pipe { display: grid; gap: var(--cds-gap-md); }
+.jh-stages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.jh-stage { padding: 0 var(--cds-gap-md) 0 0; border-left: 1px solid var(--jh-line); padding-left: var(--cds-gap-md); min-width: 0; }
+.jh-stage:first-child { border-left: 0; padding-left: 0; }
+.jh-stage-n { font-family: var(--font-anthropic-serif); font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.jh-stage-l { margin-top: 6px; font-size: var(--cds-font-size-body); }
+.jh-stage-r { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.jh-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--jh-soft); }
+.jh-bar span { display: block; height: 100%; min-width: 3px; }
+.jh-bar span + span { box-shadow: -2px 0 0 var(--color-bg); }
+.jh-legend { display: flex; flex-wrap: wrap; gap: 4px var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; padding: 0; list-style: none; }
+.jh-legend li { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.jh-sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+/* Two-column band */
+.jh-band { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: calc(var(--cds-gap-lg) * 1.5); align-items: start; }
+.jh-sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: var(--cds-gap-sm); padding-bottom: var(--cds-gap-sm); border-bottom: 2px solid var(--color-fg); margin-bottom: var(--cds-gap-sm); }
+.jh-sec-h h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.jh-sec-h span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.jh-empty { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-gap-md) 0; margin: 0; }
+
+/* Timeline */
+.jh-tl { list-style: none; margin: 0; padding: 0; }
+.jh-ev { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); gap: var(--cds-gap-md); padding: var(--cds-gap-md) 0; border-bottom: 1px solid var(--jh-line); }
+.jh-ev:last-child { border-bottom: 0; }
+.jh-when { font-variant-numeric: tabular-nums; }
+.jh-when b { display: block; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.6rem; line-height: 1; }
+.jh-when span { display: block; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 2px; }
+.jh-when.jh-tbd b { font-size: var(--cds-font-size-body); font-family: var(--font-anthropic-sans); font-weight: var(--cds-font-weight-medium); color: var(--jh-ready); }
+.jh-ev-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--cds-gap-sm); }
+.jh-ev-t strong { font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-body); }
+.jh-kind { font-size: var(--cds-font-size-caption); padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--k) 14%, transparent); color: var(--k); white-space: nowrap; }
+.jh-ev-s { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 2px; overflow-wrap: anywhere; }
+.jh-soon { color: var(--color-bad); font-weight: var(--cds-font-weight-medium); }
+.jh-acts { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-sm); margin-top: var(--cds-gap-xs); }
+.jh-btn { cursor: pointer; border: 1px solid var(--jh-line); background: var(--color-bg); color: var(--color-fg); border-radius: 8px; padding: 3px 10px; font-size: var(--cds-font-size-caption); text-decoration: none; display: inline-flex; align-items: center; }
+.jh-btn:hover { border-color: var(--color-fg-muted); }
+.jh-btn.jh-primary { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.jh-prep { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cds-font-size-caption); line-height: 1.55; margin: var(--cds-gap-sm) 0 0; padding: var(--cds-gap-sm) var(--cds-gap-md); background: var(--jh-soft); border-radius: 8px; }
+.jh-past { margin-top: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.jh-past summary { cursor: pointer; }
+.jh-past ul { margin: var(--cds-gap-xs) 0 0; padding-left: 1.1rem; }
+
+/* Waiting on you */
+.jh-wait { list-style: none; margin: 0; padding: 0; }
+.jh-wait li { padding: var(--cds-gap-sm) 0; border-bottom: 1px solid var(--jh-line); font-size: var(--cds-font-size-caption); }
+.jh-wait li:last-child { border-bottom: 0; }
+.jh-wait strong { display: block; font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+.jh-wait span { color: var(--color-fg-muted); }
+
+/* Chart */
+.jh-chart { position: relative; min-height: 160px; }
+.jh-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+.jh-tip span { color: var(--cds-text-secondary); display: block; }
+.jh-fail { display: flex; align-items: center; justify-content: center; min-height: 160px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+
+/* Applications */
+.jh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--cds-gap-sm); }
+.jh-chip { cursor: pointer; border: 1px solid var(--jh-line); background: var(--color-bg); color: var(--color-fg); border-radius: 999px; padding: 4px 12px; font-size: var(--cds-font-size-caption); display: inline-flex; gap: 6px; align-items: center; }
+.jh-chip i { font-style: normal; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.jh-chip[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.jh-chip[aria-pressed="true"] i { color: inherit; opacity: .75; }
+.jh-tools { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; margin-bottom: var(--cds-gap-sm); }
+.jh-tools input, .jh-tools select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--jh-line); border-radius: 8px; padding: 6px 10px; }
+.jh-tools input { flex: 1 1 14rem; min-width: 0; }
+.jh-count { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+.jh-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); }
+.jh-table th { text-align: left; font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); border-bottom: 1px solid var(--jh-line); padding: 0; position: sticky; top: 0; background: var(--color-bg); z-index: 1; }
+.jh-table th button { all: unset; cursor: pointer; display: block; padding: 6px 8px; }
+.jh-table td { padding: 8px; border-bottom: 1px solid var(--jh-line); vertical-align: top; }
+.jh-table tbody tr { cursor: pointer; }
+.jh-table tbody tr:hover td { background: var(--jh-soft); }
+.jh-table td.jh-d { white-space: nowrap; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); }
+.jh-table td.jh-c { font-weight: var(--cds-font-weight-medium); }
+.jh-table td.jh-m { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.jh-st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: var(--cds-font-size-caption); }
+.jh-st::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--s, var(--color-fg-muted)); }
+.jh-more { cursor: pointer; margin: var(--cds-gap-md) auto 0; display: block; border: 1px solid var(--jh-line); background: var(--color-bg); color: var(--color-fg); border-radius: 8px; padding: 6px 16px; font-size: var(--cds-font-size-body); }
+
+/* Activity log */
+.jh-act-tools { display: flex; gap: var(--cds-gap-sm); align-items: center; margin-bottom: var(--cds-gap-sm); flex-wrap: wrap; }
+.jh-act-tools select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--jh-line); border-radius: 8px; padding: 6px 10px; }
+.jh-act { list-style: none; margin: 0; padding: 0; max-height: 28rem; overflow: auto; border-top: 1px solid var(--jh-line); }
+.jh-act li { display: grid; grid-template-columns: 7.5rem 4.5rem minmax(0, 1fr); gap: var(--cds-gap-sm); padding: 6px 0; border-bottom: 1px solid var(--jh-line); font-size: var(--cds-font-size-caption); align-items: baseline; }
+.jh-act time { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.jh-act b { font-weight: var(--cds-font-weight-medium); color: var(--k, var(--color-fg-muted)); }
+.jh-act span { overflow-wrap: anywhere; }
+@media (max-width: 40rem) { .jh-act li { grid-template-columns: 4.5rem minmax(0, 1fr); } .jh-act time { grid-column: 1 / -1; } }
+
+/* Answer bank */
+.jh-ans { display: grid; grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr); gap: 0; margin: 0; }
+.jh-ans dt, .jh-ans dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--jh-line); font-size: var(--cds-font-size-body); }
+.jh-ans dt { color: var(--color-fg-muted); padding-right: var(--cds-gap-md); }
+.jh-ans dd { line-height: 1.5; max-width: 60ch; }
+@media (max-width: 40rem) { .jh-ans { grid-template-columns: minmax(0, 1fr); } .jh-ans dt { border-bottom: 0; padding-bottom: 0; } }
+
+/* Drawer */
+.jh-scrim { position: fixed; inset: 0; background: color-mix(in srgb, #000 35%, transparent); z-index: 40; }
+.jh-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(46rem, 100vw); background: var(--color-bg); border-left: 1px solid var(--jh-line); z-index: 41; display: flex; flex-direction: column; box-shadow: -12px 0 32px color-mix(in srgb, #000 18%, transparent); }
+.jh-dh { padding: var(--cds-gap-lg) var(--cds-gap-lg) 0; display: grid; gap: var(--cds-gap-sm); }
+.jh-dh-top { display: flex; justify-content: space-between; gap: var(--cds-gap-md); align-items: start; }
+.jh-dh h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; }
+.jh-dh p { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+.jh-facts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; padding: 0; list-style: none; }
+.jh-facts b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.jh-tabs { display: flex; gap: var(--cds-gap-md); border-bottom: 1px solid var(--jh-line); margin-top: var(--cds-gap-sm); }
+.jh-tab { cursor: pointer; background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+.jh-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); }
+.jh-db { overflow: auto; padding: var(--cds-gap-lg); flex: 1; }
+.jh-x { cursor: pointer; border: 1px solid var(--jh-line); background: var(--color-bg); color: var(--color-fg); border-radius: 8px; padding: 4px 10px; font-size: var(--cds-font-size-caption); flex: none; }
+.jh-notes { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cds-font-size-body); line-height: 1.55; margin: 0 0 var(--cds-gap-md); }
+.jh-qa { margin: 0 0 var(--cds-gap-md); padding-left: var(--cds-gap-md); border-left: 2px solid var(--jh-line); }
+.jh-qa p { margin: 0 0 4px; }
+.jh-qa p:first-child { font-weight: var(--cds-font-weight-medium); }
+.jh-jd { max-width: 42rem; font-size: var(--cds-font-size-body); line-height: 1.6; overflow-wrap: anywhere; }
+.jh-jd h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: var(--cds-gap-lg) 0 var(--cds-gap-xs); padding-bottom: 4px; border-bottom: 1px solid var(--jh-line); }
+.jh-jd > h3:first-child { margin-top: 0; }
+.jh-jd p { margin: 0 0 var(--cds-gap-sm); }
+.jh-jd ul { margin: 0 0 var(--cds-gap-sm); padding-left: 1.25rem; }
+.jh-jd li { margin: 0 0 4px; }
+.jh-jd details { margin-top: var(--cds-gap-lg); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.jh-jd summary { cursor: pointer; }
+.jh-paper { border: 1px solid var(--jh-line); border-radius: 6px; padding: var(--cds-pad-lg); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 42rem; }
+.jh-p-name { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); text-align: center; margin: 0; }
+.jh-p-contact { text-align: center; color: var(--color-fg-muted); margin: 4px 0 0; overflow-wrap: anywhere; }
+.jh-p-sec { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); border-bottom: 1px solid var(--jh-line); margin: var(--cds-gap-md) 0 4px; padding-bottom: 2px; }
+.jh-p-row { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); flex-wrap: wrap; }
+.jh-p-l { font-weight: var(--cds-font-weight-medium); min-width: 0; }
+.jh-p-r { color: var(--color-fg-muted); white-space: nowrap; }
+.jh-p-role { font-style: italic; color: var(--color-fg-muted); }
+.jh-p-ul { margin: 2px 0 6px; padding-left: 1.2rem; }
+.jh-p-skill { margin: 2px 0; }
+
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+[data-dash-source-state=empty] { color: transparent; }
+
+@media (max-width: 52rem) {
+  .jh-band { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 40rem) {
+  .jh-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--cds-gap-md); }
+  .jh-stage:nth-child(3) { border-left: 0; padding-left: 0; }
+  .jh-ev { grid-template-columns: 3.8rem minmax(0, 1fr); gap: var(--cds-gap-sm); }
+  .jh-count { margin-left: 0; width: 100%; }
+  .jh-table thead { display: none; }
+  .jh-table, .jh-table tbody { display: block; }
+  .jh-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; padding: 10px 0; border-bottom: 1px solid var(--jh-line); }
+  .jh-table td { display: block; border: 0; padding: 0; grid-column: 1 / -1; }
+  .jh-table td:empty { display: none; }
+  .jh-table td.jh-c { grid-column: 1; grid-row: 1; }
+  .jh-table td.jh-s { grid-column: 2; grid-row: 1; justify-self: end; }
+  .jh-dh, .jh-db { padding-left: var(--cds-gap-md); padding-right: var(--cds-gap-md); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .jh-bar span { transition: flex-grow .6s ease; }
+}
+</style>
+
+<div class="jh">
+  <header class="jh-top" id="overview">
+    <h1>{{TITLE}}</h1>
+    <p class="jh-stamp"><span id="jh-upd-apps" data-source="status" data-field="at" data-where="key=applications">—</span><br><span id="jh-upd-email" data-source="status" data-field="at" data-where="key=email">—</span><br>Applications sync every 30 minutes; email is checked every 6 hours.</p>
+  </header>
+
+  <section class="jh-pipe" id="pipeline" aria-label="Where your applications stand">
+    <div class="jh-stages">
+      <div class="jh-stage"><div class="jh-stage-n dash-skeleton" data-source="funnel" data-field="n" data-where="stage=Sent">—</div><div class="jh-stage-l">Applications sent</div><div class="jh-stage-r">across every company</div></div>
+      <div class="jh-stage"><div class="jh-stage-n dash-skeleton" data-source="funnel" data-field="n" data-where="stage=Heard%20back">—</div><div class="jh-stage-l">Heard back</div><div class="jh-stage-r"><span data-source="funnel" data-field="pct" data-where="stage=Heard%20back">—</span> of sent</div></div>
+      <div class="jh-stage"><div class="jh-stage-n dash-skeleton" data-source="funnel" data-field="n" data-where="stage=In%20process">—</div><div class="jh-stage-l">Screens and interviews</div><div class="jh-stage-r"><span data-source="funnel" data-field="pct" data-where="stage=In%20process">—</span> of sent</div></div>
+      <div class="jh-stage"><div class="jh-stage-n dash-skeleton" data-source="funnel" data-field="n" data-where="stage=Offer">—</div><div class="jh-stage-l">Offers</div><div class="jh-stage-r"><span data-source="funnel" data-field="pct" data-where="stage=Offer">—</span> of sent</div></div>
+    </div>
+    <div class="jh-bar" id="jh-bar" data-source="by_status" role="img" aria-label="Sent applications by status"></div>
+    <ul class="jh-legend" id="jh-legend" data-source="by_status"></ul>
+  </section>
+
+  <div class="jh-band">
+    <section id="up-next" aria-labelledby="h-next">
+      <div class="jh-sec-h"><h2 id="h-next">Up next</h2><span>Pacific time</span></div>
+      <ol class="jh-tl" id="jh-tl" data-source="calls oas"></ol>
+      <p class="jh-empty" id="jh-tl-none" hidden>Nothing scheduled. New calls and coding tests show up here after the next email check.</p>
+      <details class="jh-past" id="jh-past" hidden><summary>Past calls and tests</summary><ul id="jh-past-list"></ul></details>
+    </section>
+
+    <section id="waiting" aria-labelledby="h-wait">
+      <div class="jh-sec-h"><h2 id="h-wait">Waiting on you</h2><span id="jh-wait-n"></span></div>
+      <p class="jh-empty" id="jh-wait-how" hidden>Each one stopped at an email code. Type the code into its open Chrome tab, or ask Claude to redo it so you can.</p>
+      <ul class="jh-wait" id="jh-wait" data-source="applications"></ul>
+      <button type="button" class="jh-more" id="jh-wait-more" hidden>Show all</button>
+      <p class="jh-empty" id="jh-wait-none" hidden>Nothing needs you right now.</p>
+    </section>
+  </div>
+
+  <section id="per-day" aria-labelledby="h-day">
+    <div class="jh-sec-h"><h2 id="h-day">Sent per day</h2><span>submitted applications only</span></div>
+    <div class="jh-chart" data-source="per_day"></div>
+  </section>
+
+  <section id="applications" aria-labelledby="h-apps">
+    <div class="jh-sec-h"><h2 id="h-apps">Every application</h2><span>open one for its notes, job description and resume</span></div>
+    <div class="jh-chips" id="jh-chips" data-source="applications" role="group" aria-label="Filter by status"></div>
+    <div class="jh-tools">
+      <input id="jh-search" type="search" placeholder="Search company, role, location, notes" aria-label="Search applications">
+      <select id="jh-sort" aria-label="Sort applications"><option value="applied:-1">Newest first</option><option value="applied:1">Oldest first</option><option value="company:1">Company A–Z</option><option value="status:1">Status</option></select>
+      <span class="jh-count" id="jh-count"></span>
+    </div>
+    <table class="jh-table" id="jh-main" data-source="applications" data-row-key="id">
+      <thead><tr>
+        <th data-field="applied"><button type="button" data-sort="applied">Date</button></th>
+        <th data-field="company"><button type="button" data-sort="company">Company</button></th>
+        <th data-field="role"><button type="button" data-sort="role">Role</button></th>
+        <th data-field="status"><button type="button" data-sort="status">Status</button></th>
+        <th data-field="location"><button type="button" data-sort="location">Location</button></th>
+        <th data-field="pay"><button type="button" data-sort="pay">Pay</button></th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="jh-empty" id="jh-none" hidden>No applications match. Clear the search or pick another status.</p>
+    <button type="button" class="jh-more" id="jh-more" hidden>Show more</button>
+  </section>
+
+  <section id="activity" aria-labelledby="h-act">
+    <div class="jh-sec-h"><h2 id="h-act">Activity log</h2><span>everything the job hunt did, newest first</span></div>
+    <div class="jh-act-tools"><select id="jh-act-kind" aria-label="Filter activity"><option value="">All activity</option><option value="apply">Applied</option><option value="skip">Skipped</option><option value="block">Blocked</option><option value="status">Status changes</option><option value="safety">Safety flags</option><option value="scan">Job scans</option><option value="publish">Dashboard updates</option><option value="error">Errors</option></select></div>
+    <ol class="jh-act" id="jh-act" data-source="activity"></ol>
+    <p class="jh-empty" id="jh-act-none" hidden>Nothing logged yet. Entries appear as the job hunt runs.</p>
+  </section>
+
+  <section id="answers" aria-labelledby="h-ans">
+    <div class="jh-sec-h"><h2 id="h-ans">Your standard answers</h2><span>what Claude puts on every application</span></div>
+    <dl class="jh-ans" id="jh-ans" data-source="answers"></dl>
+  </section>
+
+  <div class="jh-scrim" id="jh-scrim" hidden></div>
+  <aside class="jh-drawer" id="jh-drawer" data-source="applications jds resumes" role="dialog" aria-modal="true" aria-labelledby="jh-d-title" hidden>
+    <div class="jh-dh">
+      <div class="jh-dh-top">
+        <div><h2 id="jh-d-title"></h2><p id="jh-d-co"></p></div>
+        <button type="button" class="jh-x" id="jh-d-close">Close</button>
+      </div>
+      <ul class="jh-facts" id="jh-d-facts"></ul>
+      <div class="jh-tabs" role="tablist">
+        <button type="button" class="jh-tab" role="tab" data-tab="details" aria-selected="true">Details</button>
+        <button type="button" class="jh-tab" role="tab" data-tab="jd" aria-selected="false">Job description</button>
+        <button type="button" class="jh-tab" role="tab" data-tab="resume" aria-selected="false">Resume sent</button>
+      </div>
+    </div>
+    <div class="jh-db" id="jh-d-body" role="tabpanel"></div>
+  </aside>
+</div>
+
+<script>
+dash.calc('by_status', {
+  inputs: ['applications'],
+  title: 'Applications by status',
+  description: 'How many applications are in each status.',
+  fn: (applications) => ['Applied', 'Recruiter Screen', 'Interview', 'Offer', 'Rejected', 'Ghosted', 'Ready', 'Skipped'].map((status) => ({ status, n: applications.filter((a) => a.status === status).length })),
+});
+
+dash.calc('funnel', {
+  inputs: ['applications'],
+  title: 'Application funnel',
+  description: 'Sent = every submitted application; Heard back = any reply (screen, interview, offer or rejection); In process = recruiter screen or interview; pct is the share of sent.',
+  fn: (applications) => {
+    const count = (list) => applications.filter((a) => list.includes(a.status)).length;
+    const sent = count(['Applied', 'Recruiter Screen', 'Interview', 'Offer', 'Rejected', 'Ghosted']);
+    const row = (stage, n) => ({ stage, n, pct: sent ? (n / sent * 100).toFixed(n && n / sent < 0.01 ? 1 : 0) + '%' : '0%' });
+    return [row('Sent', sent), row('Heard back', count(['Recruiter Screen', 'Interview', 'Offer', 'Rejected'])), row('In process', count(['Recruiter Screen', 'Interview'])), row('Offer', count(['Offer']))];
+  },
+});
+
+dash.calc('per_day', {
+  inputs: ['applications'],
+  title: 'Applications sent per day',
+  description: 'Submitted applications counted by the day they were sent (Ready and Skipped left out).',
+  fn: (applications) => {
+    const sent = ['Applied', 'Recruiter Screen', 'Interview', 'Offer', 'Rejected', 'Ghosted'];
+    const byDay = new Map();
+    for (const a of applications) if (sent.includes(a.status)) byDay.set(a.applied, (byDay.get(a.applied) || 0) + 1);
+    return [...byDay].sort((x, y) => (x[0] < y[0] ? -1 : 1)).map(([day, n]) => ({ day, n }));
+  },
+});
+
+(() => {
+  const root = document.querySelector('.jh');
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const link = (href, text, cls) => { const a = el('a', cls || '', text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; };
+  const payText = (p) => (p && !/^(not (posted|listed|stated|specified)|n\/a|none)/i.test(String(p).trim()) ? p : '');
+  const okUrl = (u) => typeof u === 'string' && /^https:\/\//.test(u);
+  const fmt = d3.format(',');
+  const tz = { timeZone: 'America/Los_Angeles' };
+  const STATUS = {
+    'Applied': { c: 'var(--jh-applied)', label: 'Waiting to hear' },
+    'Recruiter Screen': { c: 'var(--jh-screen)', label: 'Recruiter screen' },
+    'Interview': { c: 'var(--jh-interview)', label: 'Interview' },
+    'Offer': { c: 'var(--jh-offer)', label: 'Offer' },
+    'Rejected': { c: 'var(--jh-rejected)', label: 'Rejected' },
+    'Ghosted': { c: 'var(--jh-skipped)', label: 'Ghosted' },
+    'Ready': { c: 'var(--jh-ready)', label: 'Needs you' },
+    'Skipped': { c: 'var(--jh-skipped)', label: 'Skipped' },
+  };
+  const SENT = ['Applied', 'Recruiter Screen', 'Interview', 'Offer', 'Rejected', 'Ghosted'];
+  const data = (id) => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
+
+  /* ---------- Pipeline ---------- */
+  const bar = document.getElementById('jh-bar');
+  const legend = document.getElementById('jh-legend');
+  const drawPipeline = () => {
+    const f = data('funnel') || [];
+    for (const n of document.querySelectorAll('[data-source="funnel"]')) {
+      const st = decodeURIComponent(n.dataset.where.split('=')[1]);
+      const r = f.find((x) => x.stage === st);
+      n.textContent = r ? (n.dataset.field === 'n' ? fmt(r.n) : r.pct) : '—';
+      if (dash.data('funnel').status !== 'loading') n.classList.remove('dash-skeleton');
+    }
+    const s = data('by_status');
+    bar.replaceChildren(); legend.replaceChildren();
+    if (!s) return;
+    const order = ['Offer', 'Interview', 'Recruiter Screen', 'Applied', 'Ghosted', 'Rejected'];
+    for (const st of order) {
+      const r = s.find((x) => x.status === st);
+      if (!r || !r.n) continue;
+      const seg = el('span'); seg.style.flexGrow = r.n; seg.style.background = STATUS[st].c; seg.title = STATUS[st].label + ': ' + fmt(r.n);
+      bar.append(seg);
+      const li = el('li'); const sw = el('span', 'jh-sw'); sw.style.background = STATUS[st].c;
+      li.append(sw, document.createTextNode(STATUS[st].label + ' ' + fmt(r.n)));
+      legend.append(li);
+    }
+    const other = s.filter((x) => x.status === 'Ready' || x.status === 'Skipped');
+    for (const r of other) { if (!r.n) continue; const li = el('li'); const sw = el('span', 'jh-sw'); sw.style.background = 'transparent'; sw.style.border = '1px dashed ' + STATUS[r.status].c; li.append(sw, document.createTextNode(STATUS[r.status].label + ' ' + fmt(r.n) + ' (not sent)')); legend.append(li); }
+  };
+
+  /* ---------- Up next ---------- */
+  const tl = document.getElementById('jh-tl');
+  const tlNone = document.getElementById('jh-tl-none');
+  const past = document.getElementById('jh-past');
+  const pastList = document.getElementById('jh-past-list');
+  const dayStr = (d) => d.toLocaleDateString('en-US', { ...tz, weekday: 'short' });
+  const dateStr = (d) => d.toLocaleDateString('en-US', { ...tz, month: 'short', day: 'numeric' });
+  const timeStr = (d) => d.toLocaleTimeString('en-US', { ...tz, hour: 'numeric', minute: '2-digit' });
+  const inStr = (ms) => { const h = Math.floor(ms / 3600000); return h < 1 ? 'within the hour' : h < 48 ? 'in ' + h + 'h' : 'in ' + Math.floor(h / 24) + ' days'; };
+  const drawUpNext = () => {
+    tl.replaceChildren(); pastList.replaceChildren();
+    const calls = data('calls') || [], oas = data('oas') || [];
+    if (dash.data('calls').status !== 'ok' && dash.data('oas').status !== 'ok') { tlNone.hidden = true; past.hidden = true; return; }
+    const now = Date.now();
+    const evs = [];
+    for (const c of calls) evs.push({ kind: c.type || 'Call', color: 'var(--jh-screen)', t: c.when ? new Date(c.when) : null, end: c.end ? new Date(c.end) : null, done: c.status === 'Done' || c.status === 'Cancelled', tbd: c.status === 'Needs scheduling', title: c.company, sub: [c.role, c.format, c.with].filter(Boolean).join(' — '), note: c.notes, prep: c.prep, jd: c.jd_id, link: c.link, linkText: c.status === 'Needs scheduling' ? (/availability/.test(c.link || '') ? 'Send availability' : 'Pick a time') : 'Join link', email: c.email, key: c.id });
+    for (const o of oas) evs.push({ kind: 'Coding test', color: 'var(--jh-interview)', t: o.deadline ? new Date(o.deadline) : null, due: true, done: o.status === 'Done' || o.status === 'Expired', title: o.company, sub: [o.assessment, o.platform].filter(Boolean).join(' — '), note: o.notes, link: o.link, linkText: 'Open test', email: o.email, key: o.id, status: o.status });
+    const live = evs.filter((e) => !e.done && !(e.t && e.t.getTime() + 3600000 < now));
+    const gone = evs.filter((e) => !live.includes(e));
+    live.sort((a, b) => (a.t ? a.t.getTime() : -1) - (b.t ? b.t.getTime() : -1));
+    for (const e of live) {
+      const li = el('li', 'jh-ev'); li.dataset.key = e.key;
+      const w = el('div', 'jh-when' + (e.t ? '' : ' jh-tbd'));
+      if (e.t) { w.replaceChildren(el('b', '', e.t.toLocaleDateString('en-US', { ...tz, day: 'numeric' })), el('span', '', dayStr(e.t) + ', ' + e.t.toLocaleDateString('en-US', { ...tz, month: 'short' })), el('span', '', (e.due ? 'due ' : '') + timeStr(e.t))); }
+      else w.append(el('b', '', 'Book it'));
+      const body = el('div');
+      const t = el('div', 'jh-ev-t');
+      const k = el('span', 'jh-kind', e.kind); k.style.setProperty('--k', e.color);
+      t.append(el('strong', '', e.title), k);
+      if (e.t) { const ms = e.t - now; if (ms > 0 && ms < 72 * 3600000) t.append(el('span', 'jh-soon', inStr(ms))); }
+      body.append(t);
+      if (e.sub) body.append(el('div', 'jh-ev-s', e.sub));
+      if (e.note) body.append(el('div', 'jh-ev-s', e.note));
+      const acts = el('div', 'jh-acts');
+      if (okUrl(e.link)) acts.append(link(e.link, e.linkText, 'jh-btn' + (e.tbd ? ' jh-primary' : '')));
+      let prepEl = null;
+      if (e.prep) {
+        prepEl = el('p', 'jh-prep', e.prep); prepEl.hidden = true;
+        const b = el('button', 'jh-btn', 'Prep notes'); b.type = 'button'; b.setAttribute('aria-expanded', 'false');
+        b.addEventListener('click', () => { prepEl.hidden = !prepEl.hidden; b.textContent = prepEl.hidden ? 'Prep notes' : 'Hide prep notes'; b.setAttribute('aria-expanded', String(!prepEl.hidden)); });
+        acts.append(b);
+      }
+      if (e.jd) { const b = el('button', 'jh-btn', 'Job description'); b.type = 'button'; b.addEventListener('click', () => openApp(e.jd, 'jd')); acts.append(b); }
+      if (okUrl(e.email)) acts.append(link(e.email, 'Open email', 'jh-btn'));
+      if (acts.childNodes.length) body.append(acts);
+      if (prepEl) body.append(prepEl);
+      li.append(w, body);
+      tl.append(li);
+    }
+    tlNone.hidden = live.length > 0;
+    gone.sort((a, b) => (b.t ? b.t.getTime() : 0) - (a.t ? a.t.getTime() : 0));
+    for (const e of gone) pastList.append(el('li', '', e.title + ' — ' + e.kind + (e.t ? ', ' + dateStr(e.t) : '') + (e.status && e.status !== 'To do' ? ' (' + e.status.toLowerCase() + ')' : '')));
+    past.hidden = gone.length === 0;
+  };
+
+  /* ---------- Waiting on you ---------- */
+  const waitEl = document.getElementById('jh-wait');
+  let waitAll = false;
+  document.getElementById('jh-wait-more').addEventListener('click', () => { waitAll = true; drawWaiting(); });
+  const drawWaiting = () => {
+    waitEl.replaceChildren();
+    const apps = data('applications');
+    if (!apps) { document.getElementById('jh-wait-none').hidden = true; return; }
+    const rows = apps.filter((a) => a.status === 'Ready').sort((a, b) => String(b.applied).localeCompare(String(a.applied)));
+    for (const a of rows) {
+      const li = el('li'); li.dataset.key = a.id;
+      const name = el('strong'); const b = el('button', 'jh-btn', a.company); b.type = 'button'; b.style.border = '0'; b.style.padding = '0'; b.style.fontSize = 'inherit'; b.style.fontWeight = 'inherit'; b.addEventListener('click', () => openApp(a.id, 'details'));
+      name.append(b);
+      li.append(name, el('span', '', a.role));
+      if (!/code/i.test(a.notes || '')) li.append(el('div', '', (a.notes || '').slice(0, 140)));
+      if (waitEl.children.length >= 5 && !waitAll) li.hidden = true;
+      waitEl.append(li);
+    }
+    document.getElementById('jh-wait-how').hidden = !rows.some((a) => /code/i.test(a.notes || ''));
+    const wm = document.getElementById('jh-wait-more');
+    wm.hidden = waitAll || rows.length <= 5;
+    wm.textContent = 'Show all ' + rows.length;
+    document.getElementById('jh-wait-n').textContent = rows.length ? rows.length + ' to finish' : '';
+    document.getElementById('jh-wait-none').hidden = rows.length > 0;
+  };
+
+  /* ---------- Chart ---------- */
+  const chartEl = document.querySelector('.jh-chart');
+  const fmtDay = d3.utcFormat('%b %-d');
+  const drawChart = () => {
+    const d = dash.data('per_day');
+    chartEl.replaceChildren();
+    if (d.status === 'error') { chartEl.append(el('div', 'jh-fail', 'Failed to load')); return; }
+    if (d.status !== 'ok') return;
+    const rows = d.data.map((r) => ({ day: r.day, n: Number(r.n) }));
+    if (!rows.length) { chartEl.append(el('div', 'jh-empty', 'Nothing sent yet.')); return; }
+    const W = Math.max(chartEl.clientWidth, 240), H = 160;
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.n) || 1], [H - 22, 8]).nice();
+    const svg = d3.select(chartEl).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Applications sent per day');
+    const ticks = y.ticks(3).filter(Number.isInteger);
+    const tg = svg.append('g');
+    const labels = tg.selectAll('text').data(ticks).join('text').attr('x', 0).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text((t) => fmt(t));
+    let left = 0; labels.each(function () { left = Math.max(left, this.getComputedTextLength()); }); left += 8;
+    tg.selectAll('line').data(ticks).join('line').attr('x1', left).attr('x2', W).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+    const x = d3.scaleBand(rows.map((r) => r.day), [left, W]).paddingInner(0.25).paddingOuter(0.1);
+    const bw = Math.min(28, x.bandwidth());
+    const tip = el('div', 'jh-tip'); tip.hidden = true; chartEl.append(tip);
+    svg.append('g').selectAll('rect').data(rows).join('rect')
+      .attr('x', (r) => x(r.day) + (x.bandwidth() - bw) / 2).attr('width', bw).attr('y', (r) => y(r.n)).attr('height', (r) => y(0) - y(r.n)).attr('rx', 3).attr('fill', 'var(--jh-applied)')
+      .on('mousemove', (ev, r) => { tip.replaceChildren(el('span', '', fmtDay(new Date(r.day))), document.createTextNode(fmt(r.n) + (r.n === 1 ? ' application' : ' applications'))); tip.hidden = false; const [mx, my] = d3.pointer(ev, chartEl); tip.style.left = Math.min(Math.max(0, mx + 12), chartEl.clientWidth - tip.offsetWidth) + 'px'; tip.style.top = Math.max(0, my - 40) + 'px'; })
+      .on('mouseleave', () => { tip.hidden = true; });
+    const step = Math.ceil(rows.length / Math.max(1, Math.floor((W - left) / 56)));
+    svg.append('g').selectAll('text').data(rows.filter((_, i) => i % step === 0)).join('text').attr('x', (r) => x(r.day) + x.bandwidth() / 2).attr('y', H - 4).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text((r) => fmtDay(new Date(r.day)));
+  };
+
+  /* ---------- Applications table ---------- */
+  const tbody = document.querySelector('#jh-main tbody');
+  const chips = document.getElementById('jh-chips');
+  const search = document.getElementById('jh-search');
+  const sortSel = document.getElementById('jh-sort');
+  const count = document.getElementById('jh-count');
+  const more = document.getElementById('jh-more');
+  const ths = [...document.querySelectorAll('#jh-main th')];
+  let filter = 'sent', sortKey = 'applied', sortDir = -1;
+  const PAGE = 100; let limit = PAGE;
+  const CHIP_DEF = [['sent', 'All sent', SENT], ['Applied', 'Waiting', ['Applied']], ['progress', 'Screens and interviews', ['Recruiter Screen', 'Interview', 'Offer']], ['Rejected', 'Rejected', ['Rejected']], ['Ready', 'Needs you', ['Ready']], ['Skipped', 'Skipped', ['Skipped']], ['all', 'Everything', null]];
+  const drawChips = (apps) => {
+    chips.replaceChildren();
+    for (const [key, label, list] of CHIP_DEF) {
+      const n = list ? apps.filter((a) => list.includes(a.status)).length : apps.length;
+      const b = el('button', 'jh-chip'); b.type = 'button'; b.setAttribute('aria-pressed', String(filter === key));
+      b.append(document.createTextNode(label), el('i', '', fmt(n)));
+      b.addEventListener('click', () => { filter = key; limit = PAGE; drawTable(); });
+      chips.append(b);
+    }
+  };
+  const drawTable = () => {
+    const d = dash.data('applications');
+    tbody.replaceChildren();
+    if (d.status !== 'ok') { count.textContent = ''; more.hidden = true; return; }
+    const apps = d.data;
+    drawChips(apps);
+    const def = CHIP_DEF.find((c) => c[0] === filter);
+    const q = search.value.trim().toLowerCase();
+    const shown = apps.filter((a) => !def[2] || def[2].includes(a.status))
+      .filter((a) => !q || [a.company, a.role, a.location, a.notes, a.portal].join(' ').toLowerCase().includes(q))
+      .sort((a, b) => { const x = String(a[sortKey] ?? ''), y = String(b[sortKey] ?? ''); return x !== y ? (x < y ? -sortDir : sortDir) : String(a.company).localeCompare(String(b.company)); });
+    for (const a of shown.slice(0, limit)) {
+      const tr = el('tr'); tr.dataset.key = a.id; tr.tabIndex = 0;
+      tr.addEventListener('click', () => openApp(a.id, 'details'));
+      tr.addEventListener('keydown', (e) => { if (e.key === 'Enter') openApp(a.id, 'details'); });
+      const st = el('td', 'jh-s'); const s = el('span', 'jh-st', a.status); s.style.setProperty('--s', (STATUS[a.status] || {}).c || 'var(--color-fg-muted)'); st.append(s);
+      tr.append(el('td', 'jh-d', a.applied), el('td', 'jh-c', a.company), el('td', '', a.role), st, el('td', 'jh-m', a.location), el('td', 'jh-m', payText(a.pay)));
+      tbody.append(tr);
+    }
+    document.getElementById('jh-none').hidden = shown.length > 0;
+    more.hidden = shown.length <= limit;
+    more.textContent = 'Show ' + Math.min(PAGE, shown.length - limit) + ' more';
+    count.textContent = fmt(Math.min(limit, shown.length)) + ' of ' + fmt(shown.length) + ' shown';
+    sortSel.value = sortKey + ':' + sortDir;
+    for (const th of ths) { const k = th.querySelector('button').dataset.sort; th.setAttribute('aria-sort', k === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'); }
+  };
+  search.addEventListener('input', () => { limit = PAGE; drawTable(); });
+  sortSel.addEventListener('change', () => { const [k, dd] = sortSel.value.split(':'); sortKey = k; sortDir = Number(dd); limit = PAGE; drawTable(); });
+  more.addEventListener('click', () => { limit += PAGE; drawTable(); });
+  for (const th of ths) th.querySelector('button').addEventListener('click', (e) => { const k = e.currentTarget.dataset.sort; if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === 'applied' ? -1 : 1; } drawTable(); });
+
+  /* ---------- Drawer ---------- */
+  const scrim = document.getElementById('jh-scrim');
+  const drawer = document.getElementById('jh-drawer');
+  const dBody = document.getElementById('jh-d-body');
+  const tabs = [...drawer.querySelectorAll('.jh-tab')];
+  let current = null, lastFocus = null;
+  const HEAD_WORDS = /^(about( the)? (role|team|you|us|company|position|job|opportunity)|the role|the team|the opportunity|role overview|overview|summary|position summary|job summary|who we are|who you are|what you('|’)ll (do|bring|need|work on|be doing)|what we('|’)re looking for|what we offer|what you get|what we expect|responsibilities|key responsibilities|your responsibilities|duties|requirements|basic qualifications|minimum qualifications|preferred qualifications|preferred skills( and experience)?|qualifications|nice to have|nice-to-haves?|bonus( points| qualifications)?|skills|benefits|perks|compensation|pay|salary|location|why join( us)?.*|how to apply|additional (information|requirements)|itar requirements|equal opportunity.*|eeo.*|our stack|tech stack|in this role.*|you will|you have|you are|you might be a fit.*)$/i;
+  const BOILER = /^(equal (employment )?opportunity|eeo|itar requirements|accommodation|privacy|e-verify|pay transparency|applicants wishing|.*affirmative action)/i;
+  const stripColon = (t) => t.replace(/[:：]\s*$/, '').trim();
+  const isHead = (t) => { const x = stripColon(t); if (!x || x.length > 70 || /[.!,;]$/.test(x)) return false; if (HEAD_WORDS.test(x)) return true; if (/[:：]\s*$/.test(t) && x.split(/\s+/).length <= 7) return true; const L = x.replace(/[^A-Za-z]/g, ''); return L.length >= 4 && L === L.toUpperCase() && x.split(/\s+/).length <= 8; };
+  const ACR = new Set(['ITAR', 'EEO', 'US', 'USA', 'AI', 'ML', 'IT', 'HR', 'EAR', 'AWS', 'API', 'SQL', 'R&D', 'CI', 'CD', 'QA', 'UX', 'UI']);
+  const SMALL = new Set(['and', 'or', 'of', 'the', 'to', 'for', 'in', 'on', 'with', 'at', 'a', 'an']);
+  const tidy = (t) => { const x = stripColon(t); if (x !== x.toUpperCase()) return x; return x.split(' ').map((W, i) => { const w = W.toLowerCase(); if (ACR.has(W.replace(/[^A-Z&]/g, ''))) return W; return (i > 0 && SMALL.has(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1); }).join(' '); };
+  const renderJD = (text, box) => {
+    let para = [], list = null, target = box, boiler = null;
+    const flushP = () => { if (para.length) { target.append(el('p', '', para.join(' '))); para = []; } };
+    for (const raw of text.split('\n')) {
+      const line = raw.trim();
+      if (!line) { flushP(); continue; }
+      if (/^#[a-z]+(-[a-z0-9]+)?$/i.test(line)) continue;
+      const b = line.match(/^(?:[-•*·▪●◦–]|\d+[.)])\s+(.*)$/);
+      if (b) { flushP(); if (!list) { list = el('ul'); target.append(list); } list.append(el('li', '', b[1])); continue; }
+      if (isHead(line)) {
+        flushP(); list = null;
+        if (!boiler && BOILER.test(stripColon(line))) { boiler = el('details'); boiler.append(el('summary', '', 'Legal, ITAR and EEO fine print')); box.append(boiler); target = boiler; }
+        target.append(el('h3', '', tidy(line))); continue;
+      }
+      list = null; para.push(line);
+    }
+    flushP();
+  };
+  const row2 = (l, r) => { const d = el('div', 'jh-p-row'); d.append(el('span', 'jh-p-l', l), el('span', 'jh-p-r', r)); return d; };
+  const renderResume = (rec, box) => {
+    let r = rec.resume_json != null ? rec.resume_json : rec.resume;
+    if (typeof r === 'string') { try { r = JSON.parse(r); } catch (e) { r = {}; } }
+    r = r || {};
+    const p = el('article', 'jh-paper');
+    p.append(el('h3', 'jh-p-name', r.name), el('p', 'jh-p-contact', (r.contact || []).join('  |  ')));
+    const sec = (n) => p.append(el('h4', 'jh-p-sec', n));
+    sec('Education'); for (const e of r.education || []) p.append(row2(e.school, e.where), row2(e.degree, e.dates));
+    sec('Experience'); for (const e of r.experience || []) { p.append(row2(e.org, e.where), row2(e.title, e.dates)); const ul = el('ul', 'jh-p-ul'); for (const b of e.bullets || []) ul.append(el('li', '', b)); p.append(ul); }
+    sec('Projects'); for (const pr of r.projects || []) { const h = el('div', 'jh-p-row'); const l = el('span', 'jh-p-l'); l.append(el('b', '', pr.title), document.createTextNode(pr.tech ? ' | ' + pr.tech : '')); h.append(l, el('span', 'jh-p-r', pr.dates)); p.append(h, el('div', 'jh-p-role', pr.role)); const ul = el('ul', 'jh-p-ul'); for (const b of pr.bullets || []) ul.append(el('li', '', b)); p.append(ul); }
+    sec('Technical skills'); for (const s of r.skills || []) { const pp = el('p', 'jh-p-skill'); pp.append(el('b', '', s.label + ': '), document.createTextNode(s.items)); p.append(pp); }
+    box.append(p);
+  };
+  const showTab = (tab) => {
+    for (const t of tabs) t.setAttribute('aria-selected', String(t.dataset.tab === tab));
+    dBody.replaceChildren(); dBody.scrollTop = 0;
+    const a = current; if (!a) return;
+    if (tab === 'details') {
+      const notes = String(a.notes || '');
+      const parts = notes.split(' | ');
+      const qa = parts.filter((x) => /^Q: /.test(x));
+      const rest = parts.filter((x) => !/^Q: /.test(x));
+      if (rest.length) dBody.append(el('p', 'jh-notes', rest.join('\n')));
+      if (qa.length) { dBody.append(el('h3', '', 'Answers written for you')); for (const x of qa) { const m = x.match(/^Q: (.*?) -> A: (.*)$/s); const box = el('div', 'jh-qa'); box.append(el('p', '', m ? m[1] : x), el('p', '', m ? m[2] : '')); dBody.append(box); } }
+      if (!notes) dBody.append(el('p', 'jh-empty', 'No notes for this application.'));
+    } else if (tab === 'jd') {
+      const j = (data('jds') || []).find((x) => x.id === a.id);
+      if (j && j.jd) { const art = el('article', 'jh-jd'); renderJD(j.jd, art); dBody.append(el('p', 'jh-empty', 'Saved ' + j.captured + ' from the ' + j.source + ' posting, so it stays readable after the job closes.'), art); }
+      else dBody.append(el('p', 'jh-empty', dash.data('jds').status === 'ok' ? 'No job description was saved for this one. The posting may have closed or need a login.' : 'Job descriptions are still loading.'));
+    } else {
+      const rec = (data('resumes') || []).find((x) => x.id === a.id);
+      if (rec) { dBody.append(el('p', 'jh-empty', rec.resume_file)); renderResume(rec, dBody); }
+      else dBody.append(el('p', 'jh-empty', a.resume_file ? 'Resumes are still loading.' : 'No resume was sent for this one.'));
+    }
+  };
+  const openApp = (id, tab) => {
+    const a = (data('applications') || []).find((x) => x.id === id);
+    if (!a) return;
+    current = a; lastFocus = document.activeElement;
+    document.getElementById('jh-d-title').textContent = a.role;
+    document.getElementById('jh-d-co').textContent = a.company;
+    const facts = document.getElementById('jh-d-facts'); facts.replaceChildren();
+    const fact = (k, v) => { if (!v) return; const li = el('li'); li.append(el('b', '', k + ' '), document.createTextNode(v)); facts.append(li); };
+    fact('Status', (STATUS[a.status] || {}).label || a.status); fact('Applied', a.applied); fact('Location', a.location); fact('Pay', payText(a.pay)); fact('Via', a.portal);
+    if (okUrl(a.link)) { const li = el('li'); li.append(link(a.link, 'Open posting')); facts.append(li); }
+    scrim.hidden = false; drawer.hidden = false;
+    showTab(tab || 'details');
+    document.getElementById('jh-d-close').focus();
+  };
+  const closeDrawer = () => { drawer.hidden = true; scrim.hidden = true; current = null; if (lastFocus && lastFocus.focus) lastFocus.focus(); };
+  for (const t of tabs) t.addEventListener('click', () => showTab(t.dataset.tab));
+  document.getElementById('jh-d-close').addEventListener('click', closeDrawer);
+  scrim.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !drawer.hidden) closeDrawer(); });
+
+  /* ---------- Answer bank ---------- */
+  const ansEl = document.getElementById('jh-ans');
+  const drawAnswers = () => {
+    ansEl.replaceChildren();
+    const rows = data('answers');
+    if (!rows) return;
+    for (const r of rows) { const dt = el('dt', '', r.topic); dt.dataset.key = r.id; ansEl.append(dt, el('dd', '', r.answer)); }
+  };
+
+  /* ---------- Activity log ---------- */
+  const actEl = document.getElementById('jh-act');
+  const actKind = document.getElementById('jh-act-kind');
+  const KIND = { apply: ['Applied', 'var(--jh-applied)'], skip: ['Skipped', 'var(--jh-skipped)'], block: ['Blocked', 'var(--jh-ready)'], status: ['Status', 'var(--jh-interview)'], safety: ['Safety', 'var(--jh-rejected)'], scan: ['Scan', 'var(--jh-screen)'], publish: ['Update', 'var(--color-fg-muted)'], error: ['Error', 'var(--jh-rejected)'], system: ['System', 'var(--color-fg-muted)'] };
+  const drawActivity = () => {
+    actEl.replaceChildren();
+    const rows = data('activity');
+    if (!rows) { document.getElementById('jh-act-none').hidden = true; return; }
+    const shown = rows.filter((r) => !actKind.value || r.kind === actKind.value).slice(0, 300);
+    for (const r of shown) {
+      const li = el('li'); li.dataset.key = r.id;
+      const d = new Date(r.at);
+      const t = el('time', '', isNaN(d) ? r.at : d.toLocaleString('en-US', { ...tz, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }));
+      const k = KIND[r.kind] || [r.kind, 'var(--color-fg-muted)'];
+      const b = el('b', '', k[0]); b.style.setProperty('--k', k[1]);
+      li.append(t, b, el('span', '', r.msg));
+      actEl.append(li);
+    }
+    document.getElementById('jh-act-none').hidden = shown.length > 0;
+  };
+  actKind.addEventListener('change', drawActivity);
+
+  /* ---------- Last updated ---------- */
+  const STAMPS = [
+    { el: document.getElementById('jh-upd-apps'), key: 'applications', label: 'Applications updated ', staleH: 36 },
+    { el: document.getElementById('jh-upd-email'), key: 'email', label: 'Email checked ', staleH: 12 },
+  ];
+  const drawStamp = () => {
+    const rows = data('status');
+    for (const s of STAMPS) {
+      const r = rows && rows.find((x) => x.key === s.key);
+      s.el.style.color = '';
+      if (!r) { s.el.textContent = '—'; continue; }
+      const d = new Date(r.at);
+      if (isNaN(d)) { s.el.textContent = s.label + r.at; continue; }
+      const day = d.toLocaleDateString('en-US', { ...tz, weekday: 'short', month: 'short', day: 'numeric' });
+      const time = d.toLocaleTimeString('en-US', { ...tz, hour: 'numeric', minute: '2-digit' });
+      const hours = (Date.now() - d.getTime()) / 3600000;
+      const ago = hours < 1 ? 'less than an hour ago' : hours < 24 ? Math.floor(hours) + 'h ago' : Math.floor(hours / 24) + ' days ago';
+      s.el.textContent = s.label + day + ', ' + time + ' PT (' + ago + ')';
+      if (hours > s.staleH) s.el.style.color = 'var(--color-warn)';
+    }
+  };
+
+  /* ---------- Render ---------- */
+  dash.onData(() => {
+    drawPipeline();
+    drawUpNext();
+    drawWaiting();
+    drawChart();
+    drawTable();
+    drawAnswers();
+    drawStamp();
+    drawActivity();
+    if (current) { const fresh = (data('applications') || []).find((x) => x.id === current.id); if (fresh) current = fresh; }
+  });
+})();
+</script>

@@ -1,0 +1,24 @@
+# Personal data: never commit or share these
+profile.json
+.env.telegram
+applications.json
+applications_public.json
+oas.json
+calls.json
+jds.json
+resumes.json
+answers.json
+activity_public.json
+status.json
+notified.json
+candidates*.json
+apply_queue_today.json
+simplify_needs_signin.json
+prefilter_dropped.json
+resumes/*
+!resumes/_base/
+resumes/_base/resume_base.tex
+specs/*.json
+logs/*
+!logs/.gitkeep
+__pycache__/
